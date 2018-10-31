@@ -17,12 +17,13 @@ import {
 import * as fs from "fs";
 import * as path from "path";
 import { MinecraftManifest } from "./MinecraftManifest";
+import { ResourceName } from "../resources";
 
 export class EntityTreeNode extends TreeItem {
     constructor(
         public readonly label: string, 
         private readonly _tooltip: string,
-        public readonly imageKey: string,
+        public readonly imageKey: ResourceName,
         public readonly collapsibleState: TreeItemCollapsibleState,
         ) {
             super(label, collapsibleState);
@@ -33,8 +34,8 @@ export class EntityTreeNode extends TreeItem {
     }
 
     iconPath = {
-		light: path.join(__filename, '..', '..', '..', 'resources', 'light', this.imageKey + '.svg'),
-		dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', this.imageKey + '.svg')
+		light: path.join(__filename, '..', '..', '..', 'resources', 'light', this.imageKey),
+		dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', this.imageKey)
 	};
 }
 
@@ -57,7 +58,7 @@ export class EntityTreeProvider implements TreeDataProvider<EntityTreeNode> {
         return element;
     }
 
-    getChildren(element?: EntityTreeNode | undefined): ProviderResult<EntityTreeNode[]> {
+    async getChildren(element?: EntityTreeNode | undefined): Promise<EntityTreeNode[]> {
         if (!this._workspaces || this._workspaces.length === 0) {
 			window.showInformationMessage('No dependency in empty workspace');
 			return [];
@@ -67,7 +68,14 @@ export class EntityTreeProvider implements TreeDataProvider<EntityTreeNode> {
             this.reconstructTree();
         }
 
-        return this._loadingItems;
+        if (this._loadingItems === null) {
+            return [];
+        }
+
+        console.log("Retrieving Items");
+        var items = await this._loadingItems;
+        console.log("Items retrieved");
+        return items;
     }
 
     async reconstructTree() {
@@ -80,35 +88,46 @@ export class EntityTreeProvider implements TreeDataProvider<EntityTreeNode> {
 
         if (!this._workspaces || this._workspaces.length === 0) {
             
+            console.log("No workspaces");
             commands.executeCommand('setContext', 'workspaceHasMinecraftManifestJSON', false);
             return;
         }
 
+        console.log("Reconstructing Entity Tree");
+
         this._cancelLoadingItems = new CancellationTokenSource();
+        this._cancelLoadingItems.token.onCancellationRequested(() => console.log("loading files cancelled"));
         this._loadingItems = this.loadItems(this._workspaces, this._cancelLoadingItems.token);
     }
 
     async loadItems(folders: WorkspaceFolder[], cancellationToken: CancellationToken): Promise<EntityTreeNode[]> {
         const findManifestTasks = folders.map(f => workspace.findFiles(new RelativePattern(f, "**/manifest.json"), null, undefined, cancellationToken));      
 
+        console.log("Finding Manifest files");
         const findResults = await Promise.all(findManifestTasks);
         const manifestUrls = (findResults).reduce((p, c) => [...p, ...c], []);
         if (cancellationToken.isCancellationRequested) {
+            commands.executeCommand('setContext', 'workspaceHasMinecraftManifestJSON', false);
             return [];
-        }
+        }       
 
-        commands.executeCommand('setContext', 'workspaceHasMinecraftManifestJSON', false);
+        console.log("Loading Manifests...");
         const manifests = <MinecraftManifest[]>manifestUrls.map(m => this.loadManifest(m)).filter(m => m !== null);
+        console.log(`Located ${manifests.length} manifests`);
+
+        commands.executeCommand('setContext', 'workspaceHasMinecraftManifestJSON', manifests.length > 0);
+
         return manifests.map(
             m => new EntityTreeNode(
                 m.header.name,
                 m.header.description,
-                "add-on",
+                ResourceName.AddOn,
                 TreeItemCollapsibleState.Expanded
             )
         );
     }    
     loadManifest(manifestUri: Uri): MinecraftManifest | null {
+        console.log(`Loading manifest from ${manifestUri}`);
         const path = manifestUri.fsPath;
         if (this.pathExists(path)) {
             const packageJson = <MinecraftManifest>JSON.parse(fs.readFileSync(path, 'utf-8'));
