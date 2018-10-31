@@ -2,22 +2,20 @@ import {
     TreeDataProvider, 
     WorkspaceFolder, 
     Event, 
-    TreeItem, 
-    ProviderResult, 
+    TreeItem,
     EventEmitter, 
     window, 
     CancellationTokenSource,
-    Uri,
     workspace,
     RelativePattern,
     CancellationToken,
     commands,
     TreeItemCollapsibleState
 } from "vscode";
-import * as fs from "fs";
 import * as path from "path";
-import { MinecraftManifest } from "./MinecraftManifest";
 import { ResourceName } from "../resources";
+import { ParseManifest } from "./parsing/ParseManifest";
+import { ParseModules } from "./parsing/ParseModules";
 
 export class EntityTreeNode extends TreeItem {
     constructor(
@@ -112,42 +110,20 @@ export class EntityTreeProvider implements TreeDataProvider<EntityTreeNode> {
         }       
 
         console.log("Loading Manifests...");
-        const manifests = <MinecraftManifest[]>manifestUrls.map(m => this.loadManifest(m)).filter(m => m !== null);
-        console.log(`Located ${manifests.length} manifests`);
+        const manifests = ParseManifest.loadManifests(manifestUrls)
+        const modules = ParseModules.loadModules(manifests);
 
-        commands.executeCommand('setContext', 'workspaceHasMinecraftManifestJSON', manifests.length > 0);
+        console.log(`Located ${modules.length} manifests`);
 
-        return manifests.map(
+        commands.executeCommand('setContext', 'workspaceHasMinecraftManifestJSON', modules.length > 0);
+
+        return modules.map(
             m => new EntityTreeNode(
-                m.header.name,
-                m.header.description,
-                ResourceName.AddOn,
-                TreeItemCollapsibleState.Expanded
+                m.label,
+                m.description,
+                m.icon,
+                TreeItemCollapsibleState.None
             )
         );
-    }    
-    loadManifest(manifestUri: Uri): MinecraftManifest | null {
-        console.log(`Loading manifest from ${manifestUri}`);
-        const path = manifestUri.fsPath;
-        if (this.pathExists(path)) {
-            const packageJson = <MinecraftManifest>JSON.parse(fs.readFileSync(path, 'utf-8'));
-            if (packageJson.format_version === undefined || packageJson.header === undefined) {
-                console.log(`manifest at '${manifestUri}' was not a valid Minecraft Bedrock manifest.`);
-                return null;
-            }
-            return packageJson;
-        }
-
-        return null;
     }
-
-    private pathExists(p: string): boolean {
-		try {
-			fs.accessSync(p);
-		} catch (err) {
-			return false;
-		}
-
-		return true;
-	}
 }
