@@ -11,16 +11,28 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello"
+        "workspaceContains:**/manifest.json"
     ],
     "main": "./out/extension",
     "contributes": {
-        "commands": [
-            {
-                "command": "extension.sayHello",
-                "title": "Hello World"
-            }
-        ]
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "minecraft",
+                    "title": "Minecraft",
+                    "icon": "resources/noun_creeper_431729.svg",
+                    "when": "workspaceHasMinecraftManifestJSON"
+                }
+            ]
+        },
+        "views": {
+            "minecraft": [
+                {
+                    "id": "entityTree",
+                    "name": "Entities"                    
+                }
+            ]
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

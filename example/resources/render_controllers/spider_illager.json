@@ -1,0 +1,15 @@
+{
+  "format_version":"1.8.0-beta.1",
+  "render_controllers": {
+	  "controller.render.spider_illager": {
+		"arrays": {
+		  "materials": {
+			"Array.materials": [ "Material.default", "Material.invisible" ]
+		  }
+		},
+		"geometry": "Geometry.default",
+		"materials": [ { "*": "Array.materials[Entity.Flags.INVISIBLE]" } ],
+		"textures": [ "Texture.default" ]
+	  }
+  }
+}

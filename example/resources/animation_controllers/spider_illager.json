@@ -1,0 +1,23 @@
+{
+  "format_version":"1.8.0-beta.1",
+  "animation_controllers": {
+	  "controller.animation.spider_illager.move": {
+			"states": {
+				"default": {
+          "parameters": [ "Entity.Member.WalkSpeed" ],
+					"animations": {
+						"default_leg_pose": [],
+            "walk": [
+              {
+                "0.0": 0.0,
+                "1.0": 1.0
+              }
+            ],
+						"general": [],
+						"look_at_target": []
+					}
+				}
+			}
+	  }
+  }
+}

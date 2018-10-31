@@ -1,0 +1,31 @@
+{
+  "format_version": "1.8.0-beta.1",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "minecon:scorpion",
+      "materials": { "default": "scorpion" },
+      "textures": {
+        "default": "textures/entity/scorpion/scorpion"
+      },
+      "geometry": {
+        "default": "geometry.scorpion"
+      },
+      "animations": {
+        "default_pose": "animation.scorpion.default_pose",
+        "walk": "animation.scorpion.walk",
+        "look_at_target": "animation.scorpion.look_at_target"
+      },
+      "animation_controllers": [
+        { "move": "controller.animation.scorpion.move" }
+      ],
+      "render_controllers": [ "controller.render.scorpion" ],
+      "locators": {
+        "lead": { "head": [ 0.0, 20.0, -8.0 ] }
+      },
+      "spawn_egg": {
+        "base_color": "#974100",
+        "overlay_color": "#C3B486"
+      }
+    }
+  }
+}

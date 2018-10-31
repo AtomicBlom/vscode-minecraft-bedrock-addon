@@ -1,0 +1,56 @@
+{
+  "format_version": "1.8.0-beta.1",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "minecon:skeletaur",
+      "materials": {
+        "default": "skeletaur"
+      },
+      "textures": {
+        "default": "textures/entity/skeletaur/skeletaur"
+      },
+      "geometry": {
+        "default": "geometry.skeletaur"
+      },
+      "scripts": {
+        "pre_animation": [
+          "Entity.tcos0 = (Math.cos(Params.AnimPos * 38.17) * Params.AnimSpeed) * 57.3;",
+          "Entity.tcos1 = (Math.cos(Params.AnimPos * 38.17 + 180.0) * Params.AnimSpeed) * 57.3;",
+          "Entity.attackBodyRotY = Math.sin(Math.sqrt(Entity.AttackTime)) * 36.0;",
+          "Entity.cosAttackBodyRotY = Math.cos(Entity.attackBodyRotY);",
+          "Entity.sinAttackBodyRotY = Math.sin(Entity.attackBodyRotY);",
+          "Entity.attack = Math.sin(1.0 - (1.0 - Entity.AttackTime) * (1.0 - Entity.AttackTime)) * 180.0;",
+          "Entity.attack2 = Math.sin(Entity.AttackTime * 180.0);"
+        ]
+      },
+      "animations": {
+        "humanoid_base_pose": "animation.skeletaur.base_pose",
+        "look_at_target_default": "animation.humanoid.look_at_target.default",
+        "walk": "animation.skeletaur.move",
+        "holding": "animation.humanoid.holding",
+        "attack.positions": "animation.humanoid.attack.positions",
+        "attack.rotations": "animation.humanoid.attack.rotations",
+        "damage_nearby_mobs": "animation.humanoid.damage_nearby_mobs",
+        "bow_and_arrow": "animation.humanoid.bow_and_arrow",
+        "skeleton_attack": "animation.skeletaur.attack"
+      },
+      "animation_controllers": [
+        { "humanoid_base_pose": "controller.animation.humanoid.base_pose" },
+        { "look_at_target": "controller.animation.skeletaur.look_at_target" },
+        { "move": "controller.animation.skeletaur.move" },
+        { "holding": "controller.animation.humanoid.holding" },
+        { "attack": "controller.animation.humanoid.attack" },
+        { "bow_and_arrow": "controller.animation.skeletaur.bow_and_arrow" },
+        { "skeleton_attack": "controller.animation.skeletaur.attack" }
+      ],
+      "render_controllers": [ "controller.render.skeletaur" ],
+      "locators": {
+        "lead": { "head": [ 0.0, 0.0, 0.0 ] }
+      },
+      "spawn_egg": {
+        "base_color": "#494949",
+        "overlay_color": "#8F8F8F"
+      }
+    }
+  }
+}

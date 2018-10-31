@@ -1,0 +1,23 @@
+{
+    "format_version": 1,
+    "header": {
+        "description": "Minecon sample of how to add new custom entities to MineCraft",
+        "name": "Minecon",
+		"uuid": "294EBC44-B4F4-4A85-A58A-EC042E760CBF",
+        "version": [1, 8, 0]
+    },
+    "modules": [
+        {
+            "description": "resourcePack.minecon_server.description",
+            "type": "data",
+			"uuid": "A6BF1380-F01F-4BC0-8EC3-FEA5952EDB09",
+            "version": [1, 8, 0]
+        }
+    ],
+    "dependencies": [
+        {
+			"uuid": "113B99ED-51E2-4B50-B5D7-A2E44CA42E6F",
+            "version": [1, 8, 0]
+        }
+    ]
+}

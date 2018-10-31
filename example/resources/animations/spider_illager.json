@@ -1,0 +1,56 @@
+{
+  "format_version":"1.8.0-beta.1",
+  "animations": {
+    "animation.spider_illager.default_leg_pose": {
+		"loop": true,
+		"bones": {
+		"leg0": { "rotation": [ 0.0, 45.0, -45.0 ] },
+		"leg1": { "rotation": [ 0.0, -45.0, 45.0 ] },
+		"leg2": { "rotation": [ 0.0, 22.5, -33.3 ] },
+		"leg3": { "rotation": [ 0.0, -22.5, 33.3 ] },
+		"leg4": { "rotation": [ 0.0, -22.5, -33.3 ] },
+		"leg5": { "rotation": [ 0.0, 22.5, 33.3 ] },
+		"leg6": { "rotation": [ 0.0, -45.0, -45.0 ] },
+		"leg7": { "rotation": [ 0.0, 45.0, 45.0 ] }
+		}
+	},
+	"animation.spider_illager.look_at_target": {
+		"loop": true,
+		"bones": {
+			"head": { "rotation": [ "Entity.Member.targetXRot", "Entity.Member.targetYRot", 0.0 ] }
+		}
+	},
+	"animation.spider_illager.walk": {
+		"anim_time_update": "Entity.Member.WalkPosition",
+		"loop": true,
+		"bones": {
+			"leg0": { "rotation": [ 0.0, "-Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 0) * 22.92)", "Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 0) * 22.92)" ] },
+			"leg1": { "rotation": [ 0.0, "Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 0) * 22.92)", "-Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 0) * 22.92)" ] },
+			"leg2": { "rotation": [ 0.0, "-Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 1) * 22.92)", "Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 1) * 22.92)" ] },
+			"leg3": { "rotation": [ 0.0, "Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 1) * 22.92)", "-Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 1) * 22.92)" ] },
+			"leg4": { "rotation": [ 0.0, "-Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 2) * 22.92)", "Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 2) * 22.92)" ] },
+			"leg5": { "rotation": [ 0.0, "Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 2) * 22.92)", "-Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 2) * 22.92)" ] },
+			"leg6": { "rotation": [ 0.0, "-Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 3) * 22.92)", "Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 3) * 22.92)" ] },
+			"leg7": { "rotation": [ 0.0, "Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 3) * 22.92)", "-Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 3) * 22.92)" ] }
+		}
+	},
+	"animation.spider_illager.general": {
+		"loop": true,
+		"bones": {
+			"rightarm": {
+				"rotation": [ "Math.cos(Params.Lifetime * 20 * 38.1704) * 14.3239", 0.0, 135.0 ],
+				"scale": [ "Entity.Flags.CASTING ? 1.0 : 0.0" ]
+			},
+			"leftarm": {
+				"rotation": [ "Math.cos(Params.Lifetime * 20 * 38.1704) * 14.3239", 0.0, -135.0 ],
+				"scale": [ "Entity.Flags.CASTING ? 1.0 : 0.0" ]
+			},
+			"arms": {
+				"scale": [ "Entity.Flags.CASTING ? 0.0 : 1.0" ],
+				"position": [ 0.0, -1.0, -1.0 ],
+				"rotation": [ "-42.97", 0.0, 0.0 ]				
+			}
+		}
+	}
+}
+}

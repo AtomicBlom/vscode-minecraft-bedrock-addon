@@ -1,0 +1,130 @@
+{
+  "format_version":"1.8.0-beta.1",
+  "animations": {
+    "animation.scorpion.default_pose": {
+      "loop": true,
+      "bones": {
+        "tail0": { "rotation": [ 45.0, 0.0, 0.0 ] },
+        "tail1": { "rotation": [ 45.0, 0.0, 0.0 ] },
+        "tail2": { "rotation": [ 45.0, 0.0, 0.0 ] },
+        "tail3": { "rotation": [ 45.0, 0.0, 0.0 ] },
+        "tail4": { "rotation": [ 45.0, 0.0, 0.0 ] },
+        "tail5": { "rotation": [ 45.0, 0.0, 0.0 ] },
+        "tail6": { "rotation": [ 45.0, 0.0, 0.0 ] },
+
+        "rightLegUpper0": { "rotation": [ 0.0, -20.0, 15.0 ] },
+        "rightLegUpper1": { "rotation": [ 0.0, -10.0, 15.0 ] },
+        "rightLegUpper2": { "rotation": [ 0.0,  10.0, 15.0 ] },
+        "rightLegUpper3": { "rotation": [ 0.0,  20.0, 15.0 ] },
+        "rightLegLower0": { "rotation": [ 0.0, 0.0, -60.0 ] },
+        "rightLegLower1": { "rotation": [ 0.0, 0.0, -60.0 ] },
+        "rightLegLower2": { "rotation": [ 0.0, 0.0, -60.0 ] },
+        "rightLegLower3": { "rotation": [ 0.0, 0.0, -60.0 ] },
+
+        "leftLegUpper0": { "rotation": [ 0.0, 20.0, -15.0 ] },
+        "leftLegUpper1": { "rotation": [ 0.0, 10.0, -15.0 ] },
+        "leftLegUpper2": { "rotation": [ 0.0, -10.0, -15.0 ] },
+        "leftLegUpper3": { "rotation": [ 0.0, -20.0, -15.0 ] },
+        "leftLegLower0": { "rotation": [ 0.0, 0.0, 60.0 ] },
+        "leftLegLower1": { "rotation": [ 0.0, 0.0, 60.0 ] },
+        "leftLegLower2": { "rotation": [ 0.0, 0.0, 60.0 ] },
+        "leftLegLower3": { "rotation": [ 0.0, 0.0, 60.0 ] },
+
+        "rightArm": { "rotation": [ 0.0, -45.0, 0.0 ] },
+        "rightForeArm": { "rotation": [ 0.0, -60.0, 0.0 ] },
+        "rightBigPincher": { "rotation": [ 0.0, -45.0, 0.0 ] },
+        "rightSmallPincher": { "rotation": [ 0.0, -35.0, 0.0 ] },
+        "leftArm": { "rotation": [ 0.0, 45.0, 0.0 ] },
+        "leftForeArm": { "rotation": [ 0.0, 60.0, 0.0 ] },
+        "leftBigPincher": { "rotation": [ 0.0, 45.0, 0.0 ] },
+        "leftSmallPincher": { "rotation": [ 0.0, 35.0, 0.0 ] }
+      }
+    },
+    "animation.scorpion.look_at_target": {
+      "loop": true,
+      "bones": {
+        "head": {
+          "relative_to": { "rotation": "entity" },
+          "rotation": [ "Math.clamp(Entity.Member.targetXRot, -20, 20)", "Math.clamp(Entity.Member.targetYRot, 0, 15)", 0.0 ]
+        }
+      }
+    },
+
+    "animation.scorpion.walk": {
+      "anim_time_update": "Entity.Member.WalkPosition",
+      "loop": true,
+      "bones": {
+        "rightLegUpper0": { "rotation": [ 0.0, "-Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 0) * 22.92)", "Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 0) * 22.92)" ] },
+        "rightLegUpper1": { "rotation": [ 0.0, "Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 0) * 22.92)", "-Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 0) * 22.92)" ] },
+        "rightLegUpper2": { "rotation": [ 0.0, "-Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 1) * 22.92)", "Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 1) * 22.92)" ] },
+        "rightLegUpper3": { "rotation": [ 0.0, "Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 1) * 22.92)", "-Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 1) * 22.92)" ] },
+        "leftLegUpper0": { "rotation": [ 0.0, "-Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 2) * 22.92)", "Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 2) * 22.92)" ] },
+        "leftLegUpper1": { "rotation": [ 0.0, "Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 2) * 22.92)", "-Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 2) * 22.92)" ] },
+        "leftLegUpper2": { "rotation": [ 0.0, "-Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 3) * 22.92)", "Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 3) * 22.92)" ] },
+        "leftLegUpper3": { "rotation": [ 0.0, "Math.abs(Math.cos(Params.AnimTime * 76.34 + 90 * 3) * 22.92)", "-Math.abs(Math.sin(Params.AnimTime * 38.17 + 90 * 3) * 22.92)" ] }
+      }
+    },
+    "animation.scorpion.old_walk": {
+      "anim_time_update": "Entity.WalkAnimTime",
+      "loop": true,
+      "bones": {
+        "rightLegUpper0": { 
+          "rotation": [ 
+            0.0, 
+            "-Math.cos(Params.AnimTime * 120 * 2) * 0.4", 
+            "Math.abs(Math.sin(Params.AnimTime * 120) * 0.4)" 
+          ] 
+        },
+        "rightLegUpper1": { 
+          "rotation": [ 
+            0.0, 
+            "Math.cos(Params.AnimTime * 120 * 2) * 0.4", 
+            "-Math.abs(Math.sin(Params.AnimTime * 120) * 0.4)" 
+          ] 
+        },
+        "rightLegUpper2": { 
+          "rotation": [ 
+            0.0, 
+            "-Math.cos(Params.AnimTime * 120 * 2 + Math.PI * 2 * 2 / 4.0) * 0.4", 
+            "Math.abs(Math.sin(Params.AnimTime * 120 + Math.PI * 2 * 2 / 4.0) * 0.4)" 
+          ] 
+        },
+        "rightLegUpper3": { 
+          "rotation": [ 
+            0.0, 
+            "Math.cos(Params.AnimTime * 120 * 2 + Math.PI * 2 * 2 / 4.0) * 0.4", 
+            "-Math.abs(Math.sin(Params.AnimTime * 120 + Math.PI * 2 * 2 / 4.0) * 0.4)" 
+          ] 
+        },
+        "leftLegUpper0": { 
+          "rotation": [ 
+            0.0, 
+            "-Math.cos(Params.AnimTime * 120 * 2 + Math.PI * 1 * 2 / 4.0) * 0.4", 
+            "-Math.abs(Math.sin(Params.AnimTime * 120 + Math.PI * 2 * 1 / 4.0) * 0.4)" 
+          ] 
+        },
+        "leftLegUpper1": { 
+          "rotation": [ 
+            0.0, 
+            "Math.cos(Params.AnimTime * 120 * 2 + Math.PI * 1 * 2 / 4.0) * 0.4", 
+            "Math.abs(Math.sin(Params.AnimTime * 120 + Math.PI * 2 * 1 / 4.0) * 0.4)" 
+          ] 
+        },
+        "leftLegUpper2": { 
+          "rotation": [ 
+            0.0, 
+            "-Math.cos(Params.AnimTime * 120 * 2 + Math.PI * 3 * 2 / 4.0) * 0.4", 
+            "-Math.abs(Math.sin(Params.AnimTime * 120 + Math.PI * 2 * 3 / 4.0) * 0.4)" 
+          ] 
+        },
+        "leftLegUpper3": { 
+          "rotation": [ 
+            0.0, 
+            "Math.cos(Params.AnimTime * 120 * 2 + Math.PI * 3 * 2 / 4.0) * 0.4", 
+            "Math.abs(Math.sin(Params.AnimTime * 120 + Math.PI * 2 * 3 / 4.0) * 0.4)" 
+          ] 
+        }    
+      }
+    }
+  }
+}

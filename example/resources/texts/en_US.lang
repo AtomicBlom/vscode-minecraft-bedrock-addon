@@ -1,0 +1,14 @@
+﻿## Comments can be added anywhere on a valid line by starting with '##'
+##
+## Note, trailing spaces will NOT be trimmed. If you want room between the end of the string and the start of a
+## comment on the same line, use TABs.
+entity.minecon:spider_illager.name=Spider Illager
+entity.minecon:duck.name=Duck
+entity.minecon:scorpion.name=Scorpion
+entity.minecon:skeletaur.name=Skeletaur
+entity.minecon:vile_spider.name=Vile Spider
+item.spawn_egg.entity.minecon:spider_illager.name=Spawn Spider Illager
+item.spawn_egg.entity.minecon:duck.name=Spawn Duck
+item.spawn_egg.entity.minecon:scorpion.name=Spawn Scorpion
+item.spawn_egg.entity.minecon:skeletaur.name=Spawn Skeletaur
+item.spawn_egg.entity.minecon:vile_spider.name=Spawn Vile Spider

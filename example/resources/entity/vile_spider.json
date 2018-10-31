@@ -1,0 +1,35 @@
+{
+  "format_version": "1.8.0-beta.1",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "minecon:vile_spider",
+      "materials": {
+        "default": "spider",
+        "invisible": "spider_invisible"
+      },
+      "textures": {
+        "default": "textures/entity/vile_spider/vile_spider"
+      },
+      "geometry": {
+        "default": "geometry.spider"
+      },
+      "animations": {
+        "default_leg_pose": "animation.spider.default_leg_pose",
+        "look_at_target": "animation.spider.look_at_target",
+        "walk": "animation.spider.walk"
+      },
+      "particle_effects": {
+        "spawn_effect": "minecon:vile_spider_summon",
+        "trail_effect": "minecon:vile_spider_trail"
+      },
+      "animation_controllers": [
+        { "move": "controller.animation.spider.move" }
+      ],
+      "render_controllers": [ "controller.render.spider" ],
+      "spawn_egg": {
+        "base_color": "#000000",
+        "overlay_color": "#800080"
+      }
+    }
+  }
+}

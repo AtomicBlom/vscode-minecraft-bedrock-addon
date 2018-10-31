@@ -1,0 +1,11 @@
+{
+  "materials": {
+    "version": "1.0.0",
+
+    "spider_illager:entity_emissive_alpha": {},
+    "duck:entity": {},
+    "duck_legs:entity_alphatest": {},
+    "scorpion:entity": {},
+    "skeletaur:entity_alphatest": {}
+  }
+}

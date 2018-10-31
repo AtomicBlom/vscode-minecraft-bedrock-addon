@@ -1,0 +1,37 @@
+{
+  "format_version": "1.8.0-beta.1",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "minecon:duck",
+      "materials": {
+        "default": "duck",
+        "legs": "duck_legs"
+      },
+      "textures": {
+        "default": "textures/entity/duck/duck",
+        "baby": "textures/entity/duck/duck_baby"
+      },
+      "geometry": {
+        "default": "geometry.duck"
+      },
+      "animations": {
+        "move": "animation.chicken.move",
+        "general": "animation.chicken.general",
+        "baby_transform": "animation.chicken.baby_transform"
+      },
+      "animation_controllers": [
+        { "general": "controller.animation.chicken.general" },
+        { "move": "controller.animation.chicken.move" },
+        { "baby": "controller.animation.chicken.baby" }
+      ],
+      "render_controllers": [ "controller.render.duck" ],
+      "locators": {
+        "lead": { "head": [ 0.0, 9.0, -4.0 ] }
+      },
+      "spawn_egg": {
+        "base_color": "#53443E",
+        "overlay_color": "#2E6854"
+      }
+    }
+  }
+}

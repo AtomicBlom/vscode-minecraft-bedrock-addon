@@ -1,0 +1,62 @@
+{
+  "format_version":"1.8.0-beta.1",
+  "animation_controllers": {
+    "controller.animation.skeletaur.base_pose": {
+      "states": {
+        "default": {
+          "animations": { "humanoid_base_pose": {} }
+        }
+      }
+    },
+    "controller.animation.skeletaur.look_at_target": {
+      "states": {
+        "default": {
+          "animations": {
+            "look_at_target_default": {}
+          }
+        }
+      }
+    },
+    "controller.animation.skeletaur.move": {
+      "states": {
+        "default": {
+          "animations": {
+            "walk": [ ]
+          }
+        }
+      }
+    },
+    "controller.animation.skeletaur.bow_and_arrow": {
+      "states": {
+        "default": {
+          "transitions": [ { "bow_and_arrow": "Entity.IsBowAndArrow && !Entity.Flags.STANDING" } ]
+        },
+        "bow_and_arrow": {
+          "animations": { "bow_and_arrow": {} },
+          "transitions": [ { "default": "!Entity.IsBowAndArrow || Entity.Flags.STANDING" } ]
+        }
+      }
+    },
+    "controller.animation.skeletaur.attack": {
+      "states": {
+        "default": {
+          "parameters": [ "Entity.AttackAnimTime = 0;"],
+          "animations": {
+          },
+          "transitions": [
+            { "attacking": "Entity.Flags.STANDING" }
+          ]
+        },
+        "attacking": {
+          "parameters": ["Entity.AttackAnimTime = Entity.AttackAnimTime + Params.DeltaTime;"],
+          "animations": {
+            "skeleton_attack": {}
+          },
+          "transitions": [
+            { "default" : "!Entity.Flags.STANDING" }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "format_version": "1.8.0-beta.1",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "minecon:skeletaur",
+      "minecraft:spawn_egg": {
+        "value": true
+      },
+      "minecraft:is_summonable": {
+        "value": true
+      },
+      "minecraft:is_experimental": {
+        "value": true
+      }
+    },
+    "component_groups": {
+      "melee_attack": {
+        "minecraft:behavior.stomp_attack": {
+          "priority": 1,
+          "track_target": true,
+          "attack_duration": 2.0,
+          "reach_multiplier": 3.0
+        }
+      },
+      "ranged_attack": {
+        "minecraft:behavior.avoid_mob_type": {
+          "priority": 3,
+          "entity_types": [
+            {
+              "filters": {
+                "test": "is_family",
+                "subject": "other",
+                "value": "player"
+              },
+              "max_dist": 9,
+              "walk_speed_multiplier": 1.2,
+              "sprint_speed_multiplier": 1.4
+            }
+          ]
+        },
+        "minecraft:behavior.ranged_attack": {
+          "priority": 4,
+          "attack_interval_min": 1,
+          "attack_interval_max": 3,
+          "attack_radius": 12
+        },
+        "minecraft:shooter": {
+          "type": "Arrow",
+          "def": "minecraft:arrow"
+        }
+      },
+      "mode_switcher_ranged": {
+        "minecraft:damage_sensor": [
+          {
+            "on_damage": {
+              "filters": { "test" :  "is_family", "subject" : "other", "value" : "player" },
+              "event": "select_new_mode_from_ranged"
+            },
+            "deals_damage": false
+          }
+        ]
+      },
+      "mode_switcher_melee": {
+        "minecraft:timer": {
+          "looping": false,
+          "time": [
+            5,
+            8
+          ],
+          "time_down_event": {
+            "event": "select_new_mode_from_melee"
+          }
+        }
+      }
+    },
+    "components": {
+      "minecraft:loot": {
+        "table": "loot_tables/entities/skeletaur.json"
+      },
+      "minecraft:nameable": {},
+      "minecraft:type_family": {
+        "family": [
+          "skeleton",
+          "skeletaur",
+          "monster"
+        ]
+      },
+      "minecraft:movement": {
+        "value": 0.4,
+        "max": 0.4
+      },
+      "minecraft:navigation.walk": {
+        "can_float": true,
+        "avoid_water": true,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:jump.static": {},
+      "minecraft:breathable": {
+        "totalSupply": 15,
+        "suffocateTime": 0,
+        "breathesWater": true
+      },
+      "minecraft:collision_box": {
+        "width": 1.4,
+        "height": 2.6
+      },
+      "minecraft:health": {
+        "value": 40,
+        "max": 40
+      },
+      "minecraft:attack": {
+        "damage": 4
+      },
+      "minecraft:equipment": {
+        "table": "loot_tables/entities/skeletaur_equipment.json"
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 6,
+        "speed_multiplier": 1
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 6,
+        "probability": 0.02
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 7
+      },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "entity_types": [
+          {
+            "filters": {
+              "other_with_families": "player"
+            },
+            "max_dist": 20
+          }
+        ],
+        "must_see": true
+      },
+      "minecraft:physics": {},
+      "minecraft:on_target_acquired": {
+        "event": "target_acquired",
+        "target": "self"
+      },
+      "minecraft:on_target_escape": {
+        "event": "target_escaped",
+        "target": "self"
+      }
+    },
+    "events": {
+      "minecraft:entity_spawned": {
+        "remove": {
+          "component_groups": ["melee_attack" ]
+        },
+        "add": {
+          "component_groups": ["ranged_attack"]
+        }
+      },
+      "target_acquired": {
+        "remove": {
+          "component_groups": ["mode_switcher_melee", "melee_attack"]
+        },
+        "add": {
+          "component_groups": ["mode_switcher_ranged", "ranged_attack"]
+        }
+      },
+      "target_escaped": {
+        "remove": {
+          "component_groups": ["mode_switcher_ranged", "mode_switcher_melee"]
+        }
+      },
+      "select_new_mode_from_ranged": {
+        "remove": {
+          "component_groups": ["ranged_attack", "mode_switcher_ranged"]
+        },
+        "add": {
+          "component_groups": ["melee_attack", "mode_switcher_melee"]
+        }
+      },
+      "select_new_mode_from_melee": {
+        "remove": {
+          "component_groups": ["melee_attack", "mode_switcher_melee"]
+        },
+        "add": {
+          "component_groups": ["ranged_attack", "mode_switcher_ranged"]
+        }
+      }
+    }
+  }
+}

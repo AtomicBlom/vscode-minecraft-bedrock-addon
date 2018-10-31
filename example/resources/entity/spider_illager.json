@@ -1,0 +1,32 @@
+{
+  "format_version": "1.8.0-beta.1",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "minecon:spider_illager",
+      "materials": {
+        "default": "spider_illager",
+        "invisible": "spider_invisible"
+      },
+      "textures": {
+        "default": "textures/entity/illager/spider_illager"
+      },
+      "geometry": {
+        "default": "geometry.spider_illager"
+      },
+      "animations": {
+        "default_leg_pose": "animation.spider_illager.default_leg_pose",
+        "look_at_target": "animation.spider_illager.look_at_target",
+        "walk": "animation.spider_illager.walk",
+        "general": "animation.spider_illager.general"
+      },
+      "animation_controllers": [
+        { "move": "controller.animation.spider_illager.move" }
+      ],
+      "render_controllers": [ "controller.render.spider_illager" ],
+      "spawn_egg": {
+        "base_color": "#342d27",
+        "overlay_color": "#C400C0"
+      }
+    }
+  }
+}
