@@ -1,15 +1,12 @@
 import * as fs from "fs";
 import { Uri } from "vscode";
-import { Version, ManifestModuleType, IMinecraftElement } from "../MinecraftManifest";
+import { Version, ManifestModuleType } from "../Common";
+import { IModuleElementLoader } from "./ModuleElementLoader";
+import { ResourceModuleElementLoader } from "./ResourceModuleElementLoader";
+import { BlankModuleElementLoader } from "./BlankModuleElementLoader";
+import { InvalidManifest, MinecraftModule, AddonTreeItem } from "../TreeItems";
 
-
-export class InvalidManifest {
-    constructor(public errors: string[],
-                public fsLocation: Uri
-    ) {}
-}
-
-export interface MinecraftManifest extends IMinecraftElement {
+export interface IMinecraftManifest {
     format_version?: number;
     header: {
         description: string;
@@ -31,36 +28,29 @@ export interface MinecraftManifest extends IMinecraftElement {
 }
 
 export class ParseManifest {
-    static loadManifests(elements: Map<string, IMinecraftElement>, manifestUrls: Uri[]) {
+    static loadManifests(manifestUrls: Uri[]) {
         return manifestUrls
-            .map(m => this.loadManifest(elements, m))
-            .map(m => <MinecraftManifest | InvalidManifest>m);
+            .map(m => this.loadModulesFromManifest(m))
+            .reduce((p, c) => [...p, ...c], []);
     }
 
-    static loadManifest(elements: Map<string, IMinecraftElement>,manifestUri: Uri) {
+    static loadModulesFromManifest(manifestUri: Uri) : AddonTreeItem[] {
         console.log(`Loading manifest from ${manifestUri}`);
         const path = manifestUri.fsPath;
         if (this.pathExists(path)) {
-            const manifestJson = <MinecraftManifest>JSON.parse(fs.readFileSync(path, 'utf-8'));
+            const manifestJson = <IMinecraftManifest>JSON.parse(fs.readFileSync(path, 'utf-8'));
             const errors = this.validateManifest(manifestJson);
             if (errors.length > 0) {
-                return new InvalidManifest(
-                    errors,
-                    manifestUri
-                );
+                return [new InvalidManifest(errors, manifestUri)];
             }
-            manifestJson.fsLocation = manifestUri;
-            manifestJson.id = manifestJson.header.uuid;
-            manifestJson.children = [];
 
-            elements.set(manifestJson.header.uuid, manifestJson);
-
-            return manifestJson;
+            return this.loadModules(manifestJson, manifestUri);
         }
 
-        return null;
+        return [new InvalidManifest(["File did not exist"], manifestUri)];
     }
-    static validateManifest(packageJson: MinecraftManifest): any {
+
+    static validateManifest(packageJson: IMinecraftManifest) {
         const errors: string[] = [];
         if (packageJson.format_version === undefined) {
             errors.push("manifest.error.format-version-not-specified");
@@ -69,6 +59,42 @@ export class ParseManifest {
             errors.push("manifest.error.header-not-found");
         }
         return errors;
+    }
+
+    static loadModules(manifest: IMinecraftManifest, location: Uri) {
+        return manifest.modules.map(
+            module => new MinecraftModule(
+                {
+                    id: `${manifest.header.uuid}/${module.uuid}`,
+                    uuid: module.uuid,
+                    name: this.getModuleName(module.type, manifest),
+                    description: module.description,
+                    type: module.type,
+                    location: location
+                }, 
+                () => this.getModuleElementLoader(module.type).load(location)
+            )
+        );
+    }
+    static getModuleName(description: string, manifest: IMinecraftManifest) {
+        if (!!manifest && !!manifest.header && !!manifest.header.name) {
+            return `${description} (${manifest.header.name})`;
+        } else {
+            return `${description}`;
+        }
+    }
+
+    static getModuleElementLoader(type: ManifestModuleType): IModuleElementLoader {
+        switch (type) {
+            case ManifestModuleType.ClientData:
+                return new BlankModuleElementLoader();
+            case ManifestModuleType.Data:
+                return new BlankModuleElementLoader();
+            case ManifestModuleType.Resources:
+                return new ResourceModuleElementLoader();
+            default:
+                return new BlankModuleElementLoader();
+        }
     }
 
     private static pathExists(p: string) {
