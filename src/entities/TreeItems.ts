@@ -76,7 +76,7 @@ export class MinecraftModule extends AddonTreeItem {
         super(parameters.name, 
             parameters.description, 
             MinecraftModule.getImageKeyFromResourceName(parameters.type),
-            TreeItemCollapsibleState.Collapsed);
+            TreeItemCollapsibleState.Expanded);
 
         this.children = this.loadChildren();
     }

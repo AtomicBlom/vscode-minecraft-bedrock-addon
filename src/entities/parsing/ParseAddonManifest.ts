@@ -1,12 +1,13 @@
 import * as fs from "fs";
 import { Uri } from "vscode";
 import { Version, ManifestModuleType } from "../Common";
-import { IModuleElementLoader } from "./ModuleElementLoader";
+import { IModuleElementLoader } from "./IModuleElementLoader";
 import { ResourceModuleElementLoader } from "./ResourceModuleElementLoader";
 import { BlankModuleElementLoader } from "./BlankModuleElementLoader";
 import { InvalidManifest, MinecraftModule, AddonTreeItem } from "../TreeItems";
+import { Manifest, MinecraftBedrockManifestPackType } from "./json/manifest";
 
-export interface IMinecraftManifest {
+/*export interface IMinecraftAddonManifest {
     format_version?: number;
     header: {
         description: string;
@@ -25,7 +26,7 @@ export interface IMinecraftManifest {
         uuid: string;
         version: Version;
     }[];
-}
+}*/
 
 export class ParseManifest {
     static loadManifests(manifestUrls: Uri[]) {
@@ -38,7 +39,7 @@ export class ParseManifest {
         console.log(`Loading manifest from ${manifestUri}`);
         const path = manifestUri.fsPath;
         if (this.pathExists(path)) {
-            const manifestJson = <IMinecraftManifest>JSON.parse(fs.readFileSync(path, 'utf-8'));
+            const manifestJson = <Manifest>JSON.parse(fs.readFileSync(path, 'utf-8'));
             const errors = this.validateManifest(manifestJson);
             if (errors.length > 0) {
                 return [new InvalidManifest(errors, manifestUri)];
@@ -50,7 +51,7 @@ export class ParseManifest {
         return [new InvalidManifest(["File did not exist"], manifestUri)];
     }
 
-    static validateManifest(packageJson: IMinecraftManifest) {
+    static validateManifest(packageJson: Manifest) {
         const errors: string[] = [];
         if (packageJson.format_version === undefined) {
             errors.push("manifest.error.format-version-not-specified");
@@ -61,7 +62,10 @@ export class ParseManifest {
         return errors;
     }
 
-    static loadModules(manifest: IMinecraftManifest, location: Uri) {
+    static loadModules(manifest: Manifest, location: Uri) {
+        if (!manifest.modules ) {
+            return [];
+        }
         return manifest.modules.map(
             module => new MinecraftModule(
                 {
@@ -69,14 +73,26 @@ export class ParseManifest {
                     uuid: module.uuid,
                     name: this.getModuleName(module.type, manifest),
                     description: module.description,
-                    type: module.type,
+                    type: this.mapModuleType(module.type),
                     location: location
                 }, 
-                () => this.getModuleElementLoader(module.type).load(location)
+                () => this.getModuleElementLoader(this.mapModuleType(module.type)).load(location)
             )
         );
     }
-    static getModuleName(description: string, manifest: IMinecraftManifest) {
+    static mapModuleType(type: MinecraftBedrockManifestPackType): ManifestModuleType {
+        switch(type) {
+            case "client_data":
+                return ManifestModuleType.ClientData;
+            case "data":
+                return ManifestModuleType.Data;
+            case "resources":
+                return ManifestModuleType.Resources;
+            default:
+                throw new Error("module.type.unknown");
+        }
+    }
+    static getModuleName(description: string, manifest: Manifest) {
         if (!!manifest && !!manifest.header && !!manifest.header.name) {
             return `${description} (${manifest.header.name})`;
         } else {

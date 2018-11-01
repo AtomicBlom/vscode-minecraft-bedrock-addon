@@ -9,11 +9,9 @@ import {
     workspace,
     RelativePattern,
     CancellationToken,
-    commands,
-    TreeItemCollapsibleState
+    commands
 } from "vscode";
-import { ResourceName } from "../resources";
-import { ParseManifest } from "./parsing/ParseManifest";
+import { ParseManifest } from "./parsing/ParseAddonManifest";
 import { AddonTreeItem } from "./TreeItems";
 
 export class EntityTreeProvider implements TreeDataProvider<AddonTreeItem> {

@@ -1,4 +1,4 @@
-import { IModuleElementLoader } from "./ModuleElementLoader";
+import { IModuleElementLoader } from "./IModuleElementLoader";
 import { Uri } from "vscode";
 import { AddonTreeItem } from "../TreeItems";
 

@@ -2,3 +2,7 @@ out
 node_modules
 .vscode-test/
 *.vsix
+
+#do not check in schemas auto-generate on demand.
+src/entities/parsing/json/*.ts
+src/schemas
