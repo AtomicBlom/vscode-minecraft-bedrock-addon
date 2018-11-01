@@ -1,32 +1,11 @@
 import * as fs from "fs";
 import { Uri } from "vscode";
-import { Version, ManifestModuleType } from "../Common";
+import { ManifestModuleType } from "../Common";
 import { IModuleElementLoader } from "./IModuleElementLoader";
 import { ResourceModuleElementLoader } from "./ResourceModuleElementLoader";
 import { BlankModuleElementLoader } from "./BlankModuleElementLoader";
 import { InvalidManifest, MinecraftModule, AddonTreeItem } from "../TreeItems";
 import { Manifest, MinecraftBedrockManifestPackType } from "./json/manifest";
-
-/*export interface IMinecraftAddonManifest {
-    format_version?: number;
-    header: {
-        description: string;
-        name: string;
-        uuid: string;
-        version: Version;
-        min_engine_version?: Version;
-    };
-    modules: {
-        description: string;
-        type: ManifestModuleType;
-        uuid: string;
-        version: Version;
-    }[];
-    dependencies?: {
-        uuid: string;
-        version: Version;
-    }[];
-}*/
 
 export class ParseManifest {
     static loadManifests(manifestUrls: Uri[]) {

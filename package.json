@@ -35,9 +35,22 @@
         },
         "jsonValidation": [
             {
+                "fileMatch": "**/animation_controllers/*.json",
+                "url": "./src/schemas/resources/animation_controllers.json"
+            },
+            {
                 "fileMatch": "manifest.json",
                 "url": "./src/schemas/manifest.json"
-            }
+            },
+            
+            {
+                "fileMatch": "**/entity/*.json",
+                "url": "./src/schemas/resources/entity.json"
+            },
+            {
+                "fileMatch": "**/models/entity/*.json",
+                "url": "./src/schemas/resources/models/entity.json"
+            }            
         ]
     },
     "scripts": {
