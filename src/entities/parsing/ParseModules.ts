@@ -1,45 +1,32 @@
 import { MinecraftManifest } from "./ParseManifest";
-import { ManifestModuleType } from "../MinecraftManifest";
+import { ManifestModuleType, IMinecraftElement } from "../MinecraftManifest";
 import { ResourceName } from "../../resources";
+import * as path from "path";
+import { Uri } from "vscode";
 
-export class ParseModules {
-    static loadModules(manifests: MinecraftManifest[]) {
-        return manifests
-            .map(
-                (manifest: MinecraftManifest) => {
-                    if (manifest.errors.length > 0) {
-                        return [new MinecraftModule(
-                            `${manifest.fsLocation}`,
-                            "",
-                            manifest.fsLocation.fsPath,
-                            "",
-                            manifest,
-                            ManifestModuleType.InvalidManifest
-                        )]
-                    }
-                    return manifest.modules.map(
-                        module => new MinecraftModule(
-                                `${manifest.header.uuid}/${module.uuid}`,
-                                module.uuid,
-                                manifest.header.name,
-                                module.description,
-                                manifest,
-                                module.type
-                            )
-                        )
-                    }
-            )
-            .reduce((p, c) => [...p, ...c], []);
-    }
+export interface IMinecraftModule extends IMinecraftElement {
+    id: string;
+    uuid: string; 
+    name: string;
+    description: string;
+    type: ManifestModuleType;
 }
 
-export class MinecraftModule {
-    constructor(public nodeId: string,
-                public uuid: string, 
-                public name: string,
-                public description: string,
+export class MinecraftModule implements IMinecraftElement {
+    id: string = "";
+    uuid: string = "";
+    name: string = "New Module";
+    description: string = "";
+    type: ManifestModuleType = ManifestModuleType.Resources;
+
+    children: IMinecraftElement[];
+    
+    constructor(module: Partial<IMinecraftModule>, 
                 public manifest: MinecraftManifest,
-                public type: ManifestModuleType) {
+                public fsLocation: Uri) {
+        Object.assign(this, module);
+        
+        this.children = [];
     }
 
     get icon() {
@@ -61,5 +48,36 @@ export class MinecraftModule {
         } else {
             return `${this.name}`;
         }
+    }
+}
+
+export class ParseModules {
+    static loadModules(elements: Map<string, IMinecraftElement>, manifests: MinecraftManifest[]) {
+        const modules = manifests
+            .map(
+                (manifest: MinecraftManifest) => {
+                    return manifest.modules.map(
+                        module => new MinecraftModule(
+                            {
+                                id: `${manifest.header.uuid}/${module.uuid}`,
+                                uuid: module.uuid,
+                                name: manifest.header.name,
+                                description: module.description,
+                                type: module.type
+                            }, 
+                            manifest,
+                            manifest.fsLocation.with({
+                                path: path.dirname(manifest.fsLocation.path)
+                            })
+                        ));
+                    }
+            )
+            .reduce((p, c) => [...p, ...c], []);
+
+        modules.forEach(module => 
+            elements.set(module.id, module)
+        );
+
+        return modules;
     }
 }

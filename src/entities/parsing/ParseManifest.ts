@@ -1,10 +1,15 @@
 import * as fs from "fs";
 import { Uri } from "vscode";
-import { Version, ManifestModuleType } from "../MinecraftManifest";
+import { Version, ManifestModuleType, IMinecraftElement } from "../MinecraftManifest";
 
 
-export interface MinecraftManifest {
-    fsLocation: import("vscode").Uri;
+export class InvalidManifest {
+    constructor(public errors: string[],
+                public fsLocation: Uri
+    ) {}
+}
+
+export interface MinecraftManifest extends IMinecraftElement {
     format_version?: number;
     header: {
         description: string;
@@ -23,40 +28,47 @@ export interface MinecraftManifest {
         uuid: string;
         version: Version;
     }[];
-
-    //Not part of the JSON
-    errors: string[];
 }
 
 export class ParseManifest {
-    static loadManifests(manifestUrls: Uri[]) {
+    static loadManifests(elements: Map<string, IMinecraftElement>, manifestUrls: Uri[]) {
         return manifestUrls
-            .map(m => this.loadManifest(m))
-            .filter(m => m !== null)
-            .map(m => <MinecraftManifest>m);
+            .map(m => this.loadManifest(elements, m))
+            .map(m => <MinecraftManifest | InvalidManifest>m);
     }
 
-    static loadManifest(manifestUri: Uri) {
+    static loadManifest(elements: Map<string, IMinecraftElement>,manifestUri: Uri) {
         console.log(`Loading manifest from ${manifestUri}`);
         const path = manifestUri.fsPath;
         if (this.pathExists(path)) {
-            const packageJson = <MinecraftManifest>JSON.parse(fs.readFileSync(path, 'utf-8'));
-            packageJson.errors = [];
-            if (packageJson.format_version === undefined) {
-                packageJson.errors.push("manifest.error.format-version-not-specified");
+            const manifestJson = <MinecraftManifest>JSON.parse(fs.readFileSync(path, 'utf-8'));
+            const errors = this.validateManifest(manifestJson);
+            if (errors.length > 0) {
+                return new InvalidManifest(
+                    errors,
+                    manifestUri
+                );
             }
-            if (packageJson.header === undefined) {
-                packageJson.errors.push("manifest.error.header-not-found");
-            }
-            if (packageJson.format_version === undefined || packageJson.header === undefined) {
-                console.log(`manifest at '${manifestUri}' was not a valid Minecraft Bedrock manifest.`);
-            }
+            manifestJson.fsLocation = manifestUri;
+            manifestJson.id = manifestJson.header.uuid;
+            manifestJson.children = [];
 
-            packageJson.fsLocation = manifestUri;
-            return packageJson;
+            elements.set(manifestJson.header.uuid, manifestJson);
+
+            return manifestJson;
         }
 
         return null;
+    }
+    static validateManifest(packageJson: MinecraftManifest): any {
+        const errors: string[] = [];
+        if (packageJson.format_version === undefined) {
+            errors.push("manifest.error.format-version-not-specified");
+        }
+        if (packageJson.header === undefined) {
+            errors.push("manifest.error.header-not-found");
+        }
+        return errors;
     }
 
     private static pathExists(p: string) {

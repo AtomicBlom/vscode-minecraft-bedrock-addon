@@ -12,37 +12,21 @@ import {
     commands,
     TreeItemCollapsibleState
 } from "vscode";
-import * as path from "path";
 import { ResourceName } from "../resources";
-import { ParseManifest } from "./parsing/ParseManifest";
-import { ParseModules } from "./parsing/ParseModules";
+import { ParseManifest, InvalidManifest, MinecraftManifest } from "./parsing/ParseManifest";
+import { ParseModules, MinecraftModule } from "./parsing/ParseModules";
+import { IMinecraftElement, EntityTreeNode } from "./MinecraftManifest";
 
-export class EntityTreeNode extends TreeItem {
-    constructor(
-        public readonly label: string, 
-        private readonly _tooltip: string,
-        public readonly imageKey: ResourceName,
-        public readonly collapsibleState: TreeItemCollapsibleState,
-        ) {
-            super(label, collapsibleState);
-        }
 
-    get tooltip(): string {
-        return this._tooltip;
-    }
-
-    iconPath = {
-		light: path.join(__filename, '..', '..', '..', 'resources', 'light', this.imageKey),
-		dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', this.imageKey)
-	};
-}
 
 export class EntityTreeProvider implements TreeDataProvider<EntityTreeNode> {
     private _onDidChangeTreeData: EventEmitter<EntityTreeNode | undefined> = new EventEmitter<EntityTreeNode | undefined>();
 	readonly onDidChangeTreeData: Event<EntityTreeNode | undefined> = this._onDidChangeTreeData.event;   
 
-    private _loadingItems : Promise<EntityTreeNode[]> | null = null;
+    private _loadingItems : Promise<void> | null = null;
     private _cancelLoadingItems: CancellationTokenSource | null = null;
+    modules: EntityTreeNode[] = [];
+    locatedElements: Map<string, IMinecraftElement> = new Map<string, IMinecraftElement>();
 
     constructor(private _workspaces: WorkspaceFolder[] | undefined) {
         this.reconstructTree();
@@ -73,7 +57,12 @@ export class EntityTreeProvider implements TreeDataProvider<EntityTreeNode> {
         console.log("Retrieving Items");
         var items = await this._loadingItems;
         console.log("Items retrieved");
-        return items;
+
+        if (element === undefined) {
+            return this.modules;
+        } else {
+            return [];
+        }
     }
 
     async reconstructTree() {
@@ -98,7 +87,7 @@ export class EntityTreeProvider implements TreeDataProvider<EntityTreeNode> {
         this._loadingItems = this.loadItems(this._workspaces, this._cancelLoadingItems.token);
     }
 
-    async loadItems(folders: WorkspaceFolder[], cancellationToken: CancellationToken): Promise<EntityTreeNode[]> {
+    async loadItems(folders: WorkspaceFolder[], cancellationToken: CancellationToken): Promise<void> {
         const findManifestTasks = folders.map(f => workspace.findFiles(new RelativePattern(f, "**/manifest.json"), null, undefined, cancellationToken));      
 
         console.log("Finding Manifest files");
@@ -106,17 +95,39 @@ export class EntityTreeProvider implements TreeDataProvider<EntityTreeNode> {
         const manifestUrls = (findResults).reduce((p, c) => [...p, ...c], []);
         if (cancellationToken.isCancellationRequested) {
             commands.executeCommand('setContext', 'workspaceHasMinecraftManifestJSON', false);
-            return [];
+            return;
         }       
 
         console.log("Loading Manifests...");
-        const manifests = ParseManifest.loadManifests(manifestUrls)
-        const modules = ParseModules.loadModules(manifests);
+        const locatedElements = new Map<string, IMinecraftElement>();
+        const manifests = ParseManifest.loadManifests(locatedElements, manifestUrls)
+        this.modules = 
+            [
+                ...this.createModuleEntityNodes(ParseModules.loadModules(locatedElements, manifests.filter(this.isValidManifest))),
+                ...this.createInvalidManifestModuleEntityNodes(manifests.filter(this.isInvalidManifest))
+            ];
+        this.locatedElements = locatedElements;
 
-        console.log(`Located ${modules.length} manifests`);
+        for (const element of locatedElements) {
+            console.log(`${element[0]} - ${element[1].fsLocation}`)
+        }
 
-        commands.executeCommand('setContext', 'workspaceHasMinecraftManifestJSON', modules.length > 0);
+        console.log(`Located ${this.modules.length} manifests`);
 
+        commands.executeCommand('setContext', 'workspaceHasMinecraftManifestJSON', this.modules.length > 0);
+    }
+    private createInvalidManifestModuleEntityNodes(manifests: InvalidManifest[]) {
+        return manifests.map(
+            m => new EntityTreeNode(
+                "Invalid Module",
+                m.fsLocation.toString(),
+                ResourceName.InvalidManifest,
+                TreeItemCollapsibleState.None
+            )
+        );
+    }
+
+    private createModuleEntityNodes(modules: MinecraftModule[]) {
         return modules.map(
             m => new EntityTreeNode(
                 m.label,
@@ -125,5 +136,13 @@ export class EntityTreeProvider implements TreeDataProvider<EntityTreeNode> {
                 TreeItemCollapsibleState.None
             )
         );
+    }
+
+    private isValidManifest(manifest: MinecraftManifest | InvalidManifest): manifest is MinecraftManifest {
+        return (<MinecraftManifest>manifest).format_version !== undefined;
+    }
+
+    private isInvalidManifest(manifest: MinecraftManifest | InvalidManifest): manifest is InvalidManifest {
+        return (<InvalidManifest>manifest).errors !== undefined;
     }
 }
